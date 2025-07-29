@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<!-- saved from url=(0132)blob:https://2chcb91s6naszsmq4q3ponkt5z5lu65ukitwtkkylswm5oqjpw-h783343146.scf.usercontent.goog/b364e114-38e5-496d-9077-c1f0abca0def -->
+<html lang="vi"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script>(function(firebaseConfig, initialAuthToken, appId) {
+        window.__firebase_config = firebaseConfig;
+        window.__initial_auth_token = initialAuthToken;
+        window.__app_id = appId;
+            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjliNTYzZWFkZTM5OGI3ZWRjOTg2YThhYjM3YzNlMTY3ZjgyOGRhZGUiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbVwvZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwMjYxOTA5MzY0MjI0MDA1NDIwMyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjX2Q5ZWNmOWVjMGU4ODg5MjNfdGltZV9tYXN0ZXJfZ2FtZV9hcHAtODE4In0sImV4cCI6MTc1Mzc3MDY2OSwiaWF0IjoxNzUzNzY3MDY5LCJhbGciOiJSUzI1NiJ9.hNwxBoxz1i8ABPAvH_ngohsy2ppUGGR4dpv0Sn2MtSna2I9q2ZsoLKG3PO1cGZQjXw46YADz3PXlBEaSZ1LFrw8p13VV3t2_o3C3x-_lr7u1oV4ynVz6SAaTNy9Jels-OQxubHzLSOJNc5OHMlMtCj7poEQhelivBwSpVJUzrojQwvWmQjkbEGRJiDm3SdpZaR0eUWunMTZ2IOi9pCULrRbacPgDeLrtj4zNJYPyNWJan0oftZ6U6DIjavmHDhBs9OuYI2FzL78FQXRsPDZhw_JuqwE7yGggjCkxl3a3S_RzFHXCyFYcWkAMpDnTC3XaFBAQEIEtMORSkYy-2nTOSQ","c_d9ecf9ec0e888923_time_master_game_app-818")</script><script>(function() {
+  // Ensure this script is executed only once
+  if (window.firebaseAuthBridgeScriptLoaded) {
+    return;
+  }
+  window.firebaseAuthBridgeScriptLoaded = true;
+
+  let nextTokenPromiseId = 0;
+
+  // Stores { resolve, reject } for ongoing token requests
+  const pendingTokenPromises = {};
+
+  // Listen for messages from the Host Application
+  window.addEventListener('message', function(event) {
+
+    const messageData = event.data;
+
+  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
+      const { success, token, error, promiseId } = messageData ?? {};
+      if (pendingTokenPromises[promiseId]) {
+        if (success) {
+          pendingTokenPromises[promiseId].resolve(token);
+        } else {
+          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
+        }
+        delete pendingTokenPromises[promiseId];
+      }
+    }
+  });
+
+  // Expose a function for the Generated App to request a new Firebase token
+  window.requestNewFirebaseToken = function() {
+    const currentPromiseId = nextTokenPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingTokenPromises[currentPromiseId] = { resolve, reject };
+    });
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'REQUEST_NEW_FIREBASE_TOKEN',
+        promiseId: currentPromiseId
+      }, '*');
+    } else {
+      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
+      delete pendingTokenPromises[currentPromiseId];
+    }
+    return promise;
+  };
+})();</script><script>
+let realOriginalGetUserMedia = null;
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+}
+
+(function() {
+  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
+    try {
+      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
+        get: function() {
+          return undefined; // Or throw an error
+        },
+        configurable: false
+      });
+    } catch (error) {
+      console.error("Error defining prototype getter:", error);
+    }
+  }
+})();
+
+(function() {
+  const pendingMediaResolvers = {};
+  let nextMediaPromiseId = 0;
+
+  function requestMediaPermissions(constraints) {
+    const mediaPromiseId = nextMediaPromiseId++;
+    const promise = new Promise((resolve, reject) => {
+      pendingMediaResolvers[mediaPromiseId] = (granted) => {
+        delete pendingMediaResolvers[mediaPromiseId];
+        resolve(granted);
+      };
+    });
+
+    window.parent.postMessage({
+      type: 'requestMediaPermission',
+      constraints: constraints,
+      promiseId: mediaPromiseId,
+    }, '*');
+
+    return promise;
+  }
+
+  let originalGetUserMedia = realOriginalGetUserMedia;
+
+  function interceptGetUserMedia() {
+    if (navigator.mediaDevices) {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
+        value: function(constraints) {
+          return requestMediaPermissions(constraints).then((granted) => {
+            if (granted) {
+              if (originalGetUserMedia) {
+                return originalGetUserMedia(constraints);
+              } else {
+                throw new Error("Original getUserMedia not available.");
+              }
+            } else {
+              throw new DOMException('Permission denied', 'NotAllowedError');
+            }
+          });
+        },
+        writable: false,
+        configurable: false
+      });
+    }
+  }
+
+  interceptGetUserMedia();
+
+  const observer = new MutationObserver(function(mutationsList, observer) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
+        interceptGetUserMedia();
+      } else if (mutation.type === 'childList' && mutation.addedNodes) {
+        mutation.addedNodes.forEach(node => {
+          if (node === navigator.mediaDevices) {
+            interceptGetUserMedia();
+          }
+        });
+      }
+    }
+  });
+
+  function interceptSpeechRecognition() {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      return;
+    }
+
+    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const SpeechRecognitionWrapper = function(...args) {
+      const recognizer = new OriginalSpeechRecognition(...args);
+      const originalStart = recognizer.start.bind(recognizer);
+
+      recognizer.start = function() {
+        requestMediaPermissions({ audio: true }).then(granted => {
+          if (granted) {
+            originalStart();
+          } else {
+            const errorEvent = new SpeechRecognitionErrorEvent('error');
+            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
+            recognizer.dispatchEvent(errorEvent);
+          }
+        });
+      };
+
+      return recognizer;
+    };
+
+    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
+    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
+
+    if (window.SpeechRecognition) {
+      window.SpeechRecognition = SpeechRecognitionWrapper;
+    }
+    if (window.webkitSpeechRecognition) {
+      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
+    }
+  }
+
+  interceptSpeechRecognition();
+
+  window.addEventListener('message', function(event) {
+    if (event.data) {
+      if (event.data.type === 'resolveMediaPermission') {
+        const { promiseId, granted } = event.data;
+        if (pendingMediaResolvers[promiseId]) {
+          pendingMediaResolvers[promiseId](granted);
+        }
+      }
+    }
+  });
+
+})();</script><script>((function(modelInformation) {
+  const originalFetch = window.fetch;
+  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
+  let googleLlmBaseApiUrls = [
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
+    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
+  ];
+  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
+    googleLlmBaseApiUrls.push(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
+    );
+  });
+
+  const pendingFetchResolvers = {};
+  let nextPromiseId = 0;
+
+  function handleStringInput(input, optionsArgument) {
+    const actualUrl = input;
+    const fetchCallArgs = [actualUrl, optionsArgument];
+    const effectiveOptions = optionsArgument || {};
+    const bodyForApiKeyCheck = effectiveOptions.body;
+    const bodyForPostMessage = effectiveOptions.body;
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  function handleRequestInput(input, optionsArgument) {
+    const actualUrl = input.url;
+    const fetchCallArgs = [input, optionsArgument];
+    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (optionsArgument) {
+      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
+      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
+      if ('body' in optionsArgument) {
+        bodyForApiKeyCheck = optionsArgument.body;
+        bodyForPostMessage = optionsArgument.body;
+      } else {
+        bodyForApiKeyCheck = undefined;
+        bodyForPostMessage = input.body;
+      }
+    } else {
+      bodyForApiKeyCheck = undefined;
+      bodyForPostMessage = input.body;
+    }
+    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
+  }
+
+  window.fetch = function(input, optionsArgument) {
+    let actualUrl;
+    let fetchCallArgs;
+    let effectiveOptions = {};
+    let bodyForApiKeyCheck;
+    let bodyForPostMessage;
+
+    if (typeof input === 'string') {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
+    } else if (input instanceof Request) {
+      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
+    } else {
+      return originalFetch.apply(window, [input, optionsArgument]);
+    }
+
+    effectiveOptions.method = effectiveOptions.method || 'GET';
+    if (!effectiveOptions.headers) {
+      effectiveOptions.headers = new Headers();
+    }
+
+
+    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
+      let apiKeyIsNull = true;
+
+      const regex = new RegExp("models/([^:]+)");
+      const modelNameMatch = actualUrl.match(regex);
+      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
+
+
+      try {
+        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
+        const apiKeyParam = urlObject.searchParams.get('key');
+        if (apiKeyParam) {
+          apiKeyIsNull = false;
+        }
+      } catch (e) {
+        // Continue checks even if URL parsing fails
+      }
+
+      if (apiKeyIsNull && effectiveOptions.headers) {
+        const h = new Headers(effectiveOptions.headers);
+        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
+        if (apiKeyHeaderValue) {
+          apiKeyIsNull = false;
+          return originalFetch.apply(window, fetchCallArgs);
+        }
+      }
+
+      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
+        try {
+          const bodyData = JSON.parse(bodyForApiKeyCheck);
+          if (bodyData && bodyData.apiKey) {
+            apiKeyIsNull = false;
+            return originalFetch.apply(window, fetchCallArgs);
+          }
+        } catch (e) {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      if(apiKeyIsNull) {
+        const promiseId = nextPromiseId++;
+        const promise = new Promise((resolve) => {
+          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
+            delete pendingFetchResolvers[promiseId];
+            resolve(resolvedResponse);
+          };
+        });
+
+        let serializedBodyForPostMessage;
+        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
+            serializedBodyForPostMessage = bodyForPostMessage;
+        } else if (bodyForPostMessage instanceof ReadableStream) {
+            serializedBodyForPostMessage = null;
+        } else {
+            try {
+                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
+            } catch (e) {
+                serializedBodyForPostMessage = null;
+            }
+        }
+
+        const messageOptions = {
+            method: effectiveOptions.method,
+            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
+            body: serializedBodyForPostMessage
+        };
+
+        window.parent.postMessage({
+          type: 'requestFetch',
+          url: actualUrl,
+          modelName: modelName,
+          options: messageOptions,
+          promiseId: promiseId,
+        }, '*');
+
+        return promise;
+      }
+      return originalFetch.apply(window, fetchCallArgs);
+    }
+    return originalFetch.apply(window, fetchCallArgs);
+  };
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'resolveFetch') {
+      const { promiseId, response } = event.data;
+      if (pendingFetchResolvers[promiseId]) {
+        try {
+          const reconstructedResponse = new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: new Headers(response.headers),
+          });
+          pendingFetchResolvers[promiseId](reconstructedResponse);
+        } catch (error) {
+          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
+        }
+      }
+    }
+  });
+
+}))({"textModelName":"gemini-2.5-flash-preview-05-20","imageModelName":"imagen-3.0-generate-002","imageEditModelName":"gemini-2.0-flash-preview-image-generation","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash-preview-04-17"]})</script><script>(function() {
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+
+    /**
+   * Normalizes an error event or a promise rejection reason into a structured error object.
+   * @param {*} errorEventOrReason The error object or reason.
+   * @return {object} Structured error data { message, name, stack }.
+   */
+  function getErrorObject(errorEventOrReason) {
+    if (errorEventOrReason instanceof Error) {
+      return {
+        message: errorEventOrReason.message,
+        name: errorEventOrReason.name,
+        stack: errorEventOrReason.stack,
+      };
+    }
+    // Fallback for non-Error objects.
+    try {
+      return {
+        message: JSON.stringify(errorEventOrReason),
+        name: 'UnknownErrorType',
+        stack: null,
+      };
+    } catch (e) {
+      return {
+        message: String(errorEventOrReason),
+        name: 'UnknownErrorTypeNonStringifiable',
+        stack: null,
+      };
+    }
+  }
+
+  /**
+   * Converts an array of arguments (from log/error) into a single string.
+   * Handles Error objects specially to include their message and stack.
+   * @param {Array<*>} args - Arguments passed to console methods.
+   * @return {string} A string representation of the arguments.
+   */
+  function stringifyArgs(args) {
+    return args
+      .map((arg) => {
+        if (arg instanceof Error) {
+          const {message, stack} = arg;
+          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
+        }
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg);
+          } catch (error) {
+            return '[Circular Object]';
+          }
+        } else {
+          return String(arg);
+        }
+      })
+      .join(' ');
+  }
+
+  console.log = function(...args) {
+    const logString = stringifyArgs(args);
+    window.parent.postMessage({ type: 'log', message: logString }, '*');
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = function(...args) {
+    let errorData;
+    if (args.length > 0 && args[0] instanceof Error) {
+      const err = args[0];
+      // If the first arg is an Error, capture its details.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        ...getErrorObject(err),
+        rawArgsString: stringifyArgs(args.slice(1)),
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      // If not an Error object, treat all args as a general error message.
+      errorData = {
+        type: 'error',
+        source: 'CONSOLE_ERROR',
+        message: stringifyArgs(args),
+        name: 'ConsoleLoggedError',
+        stack: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    window.parent.postMessage(errorData, '*');
+    originalConsoleError.apply(console, args);
+  };
+
+  // Listen for global unhandled synchronous errors.
+  window.addEventListener('error', function(event) {
+    const errorDetails = event.error ? getErrorObject(event.error) : {
+      message: event.message,
+      name: 'GlobalError',
+      stack: null,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    };
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'global',
+      ...errorDetails,
+      message: errorDetails.message || event.message,
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+  // Listen for unhandled promise rejections (asynchronous errors).
+  window.addEventListener('unhandledrejection', function(event) {
+    const errorDetails = getErrorObject(event.reason);
+
+    window.parent.postMessage({
+      type: 'error',
+      source: 'unhandledrejection',
+      ...errorDetails,
+      message: errorDetails.message || 'Unhandled Promise Rejection',
+      timestamp: new Date().toISOString(),
+    }, '*');
+  });
+
+})();</script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game: Bậc Thầy Thời Gian</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <!-- Chosen Palette: Slate & Amber -->
+    <!-- Application Structure Plan: A single-view dynamic game interface. A central window displays game stages (intro, puzzle, feedback, end) controlled by JavaScript. Key interactions are a progress bar and an answer input field. The timer is removed for a relaxed, self-paced experience. Navigation is now manual via a 'Continue' button for better user control. -->
+    <!-- Visualization & Content Choices: Report Info: Game puzzles & flow -> Goal: Gamify -> Presentation: Interactive quiz format with dynamic DOM updates -> Interaction: User input, manual progression -> Justification: Creates an immersive learning experience where the user controls the pace. The "Sao Nhãng" event is now a standard puzzle. The final summary is updated to the "5 Finger Rule" for a more memorable takeaway. -> Library/Method: Vanilla JS for logic, Tailwind CSS for styling, Unicode for icons. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            overflow: hidden;
+        }
+        .game-window {
+            transition: background-color 0.5s ease, opacity 0.5s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.7s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        .animate-shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.my-4{margin-top:1rem;margin-bottom:1rem}.mt-auto{margin-top:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.flex{display:flex}.h-4{height:1rem}.h-screen{height:100vh}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-md{max-width:28rem}.flex-grow{flex-grow:1}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.gap-2{gap:0.5rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-slate-600{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity, 1))}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-slate-700{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/50{background-color:rgb(15 23 42 / 0.5)}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-6xl{font-size:3.75rem;line-height:1}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.font-bold{font-weight:700}.tracking-widest{letter-spacing:0.1em}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.placeholder-slate-400::placeholder{--tw-placeholder-opacity:1;color:rgb(148 163 184 / var(--tw-placeholder-opacity, 1))}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-amber-300:hover{--tw-bg-opacity:1;background-color:rgb(252 211 77 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-400:hover{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-amber-400:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(251 191 36 / var(--tw-ring-opacity, 1))}@media (min-width: 768px){.md\:p-8{padding:2rem}.md\:text-2xl{font-size:1.5rem;line-height:2rem}.md\:text-5xl{font-size:3rem;line-height:1}}</style></head>
+<body class="bg-slate-900 text-white flex items-center justify-center h-screen p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden" style="height: 95vh; max-height: 700px;">
+        
+        <header class="p-4 bg-slate-900/50 flex justify-center items-center border-b border-slate-700">
+            <h1 class="text-xl md:text-2xl font-bold text-amber-400">Bậc Thầy Thời Gian</h1>
+        </header>
+        
+        <div class="p-4">
+            <div class="w-full bg-slate-700 rounded-full h-4">
+                <div id="progress-bar" class="bg-amber-400 h-4 rounded-full progress-bar-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <main id="game-window" class="flex-grow p-6 md:p-8 flex flex-col items-center justify-center text-center overflow-y-auto"><div class="fade-in w-full"><div class="text-6xl mb-4">💡</div><h2 class="text-2xl font-bold mb-2">CÔNG VIỆC 1: KHỞI ĐỘNG NGÀY MỚI</h2><p class="text-slate-300 mb-4">Hãy sắp xếp lại các chữ cái sau để tìm ra công việc đầu tiên trong ngày:</p><div class="text-4xl md:text-5xl font-bold tracking-widest my-4 p-4 bg-slate-700 rounded-lg">C - H - K - H - Ế - O - Ạ</div></div></main>
+
+        <footer id="game-controls" class="p-4 bg-slate-900/50 border-t border-slate-700 mt-auto">
+            <div id="input-container" class="flex gap-2" style="display: flex;">
+                <input type="text" id="answer-input" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400" placeholder="Nhập câu trả lời của bạn...">
+                <button id="submit-btn" class="bg-amber-400 text-slate-900 font-bold px-6 py-2 rounded-lg hover:bg-amber-300 transition-colors">Gửi</button>
+            </div>
+            <div id="start-container" style="display: none;">
+                 <button id="start-btn" class="w-full bg-emerald-500 text-white font-bold px-6 py-3 rounded-lg hover:bg-emerald-400 transition-colors text-lg">Bắt Đầu Thử Thách</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                type: 'intro',
+                title: 'BẬC THẦY THỜI GIAN',
+                content: '<h3>Hành Trình Khám Phá Kỹ Năng</h3><br><div class="text-left max-w-md mx-auto text-slate-300"><h4 class="font-bold text-white mb-2">Luật Chơi:</h4><ul class="list-disc list-inside space-y-1"><li>Hoàn thành 5 "công việc" bằng cách giải đố.</li><li> Trả lời đúng sẽ nhận được một phần quà  </li><li> Mỗi câu trả lời tương ứng với một skill bạn nên trang bị để quản lý thời gian hiệu quả .</li></ul></div>',
+            },
+            {
+                type: 'puzzle',
+                icon: '💡',
+                title: 'CÔNG VIỆC 1: KHỞI ĐỘNG NGÀY MỚI',
+                question: 'Hãy sắp xếp lại các chữ cái sau để tìm ra công việc đầu tiên trong ngày:',
+                puzzleContent: '<div class="text-4xl md:text-5xl font-bold tracking-widest my-4 p-4 bg-slate-700 rounded-lg">C - H - K - H - Ế - O - Ạ</div>',
+                answer: ['kế hoạch', 'ke hoach']
+            },
+            {
+                type: 'feedback',
+                title: 'CÔNG VIỆC 1: HOÀN THÀNH!',
+                correctAnswer: 'KẾ HOẠCH',
+                quote: '"Một mục tiêu không có kế hoạch chỉ là một điều ước."',
+                icon: '📅'
+            },
+            {
+                type: 'puzzle',
+                icon: '📊',
+                title: 'CÔNG VIỆC 2: SẮP XẾP NHIỆM VỤ',
+                question: 'Sau khi có danh sách, bạn cần... sắp xếp chúng. Việc gì làm trước, việc gì làm sau. Kỹ năng này gọi là gì?',
+                answer: ['ưu tiên', 'uu tien']
+            },
+            {
+                type: 'feedback',
+                title: 'CÔNG VIỆC 2: HOÀN THÀNH!',
+                correctAnswer: 'ƯU TIÊN',
+                quote: '"Điều quan trọng nhất là giữ cho điều quan trọng nhất là điều quan trọng nhất."',
+                icon: '🔺'
+            },
+            {
+                type: 'puzzle',
+                icon: '🎯',
+                title: 'CÔNG VIỆC 3: BẮT TAY HÀNH ĐỘNG',
+                question: 'Để hoàn thành công việc, bạn cần trạng thái này. Đây là một từ có 8 chữ cái, bắt đầu bằng <strong>\'T\'</strong> và kết thúc bằng <strong>\'G\'</strong>.',
+                answer: ['tập trung', 'tap trung']
+            },
+            {
+                type: 'feedback',
+                title: 'CÔNG VIỆC 3: HOÀN THÀNH!',
+                correctAnswer: 'TẬP TRUNG',
+                quote: '"Năng lượng của bạn chảy đến nơi có  sự tập trung của bạn ."',
+                icon: '🧠'
+            },
+            {
+                type: 'puzzle',
+                icon: '👻',
+                title: '⚠️ KẺ TRỘM VÔ HÌNH! ⚠️',
+                question: 'Tôi là kẻ trộm thời gian vô hình. Tôi không lấy đi tiền bạc, nhưng cướp đi sự tập trung của bạn. Tôi đến từ những thông báo, những cuộc trò chuyện, và cả những suy nghĩ vẩn vơ.<br><br><strong>Tôi là ai?</strong>',
+                answer: ['sao nhãng', 'sao nhang']
+            },
+            {
+                type: 'feedback',
+                title: 'CÔNG VIỆC 4: HOÀN THÀNH!',
+                correctAnswer: 'SAO NHÃNG',
+                quote: '"Khả năng chống lại sự sao nhãng chính là siêu năng lực của thế kỷ 21."',
+                icon: '🛡️'
+            },
+            {
+                type: 'puzzle',
+                icon: '🚩',
+                title: 'CÔNG VIỆC CUỐI CÙNG: ĐÍCH ĐẾN',
+                question: 'Mọi thứ đều hướng về điều này. Nó được xem  là kim chỉ nam cho mọi hành động. Hãy nghĩ đến các từ:<br><strong class="text-amber-400 text-2xl">ĐÍCH ĐẾN, KẾT QUẢ, HOÀN THÀNH</strong><br>Chúng đang mô tả từ gì?',
+                answer: ['mục tiêu', 'muc tieu']
+            },
+            {
+                type: 'feedback',
+                title: 'CÔNG VIỆC 5: HOÀN THÀNH!',
+                correctAnswer: 'MỤC TIÊU',
+                quote: '"Trở ngại là những thứ đáng sợ bạn nhìn thấy khi rời mắt khỏi mục tiêu của mình."',
+                icon: '🏆'
+            },
+            {
+                type: 'end_win',
+                icon: '�',
+                title: 'CHÚC MỪNG BẬC THẦY THỜI GIAN!',
+                content: 'Bạn đã hoàn thành tất cả công việc một cách xuất sắc!'
+            },
+             {
+                type: 'summary',
+                title: 'Công Thức 5 Ngón Tay',
+                content: `<ul class="space-y-4 text-lg text-left max-w-md mx-auto text-slate-200">
+                            <li class="flex items-center"><span class="text-3xl mr-4">👍</span><span><strong class="font-bold text-amber-400">Mục tiêu:</strong> Hôm nay tôi muốn đạt được gì?</span></li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🗺️</span><span><strong class="font-bold text-amber-400">Kế hoạch:</strong> Tôi sẽ đi đường nào để đến đó?</span></li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">⭐</span><span><strong class="font-bold text-amber-400">Ưu tiên:</strong> Việc nào quan trọng nhất, cần làm trước?</span></li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🎯</span><span><strong class="font-bold text-amber-400">Tập trung:</strong> Giờ là lúc hành động, không lơ là!</span></li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🛡️</span><span><strong class="font-bold text-amber-400">Sao nhãng:</strong> Nhận biết và vượt qua mọi cám dỗ!</span></li>
+                          </ul>`
+            }
+        ];
+
+        const gameWindow = document.getElementById('game-window');
+        const startBtn = document.getElementById('start-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const answerInput = document.getElementById('answer-input');
+        const inputContainer = document.getElementById('input-container');
+        const startContainer = document.getElementById('start-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        let currentStateIndex = 0;
+        let completedTasks = 0;
+
+        function renderState(stateIndex) {
+            const state = gameData[stateIndex];
+            if (!state) return;
+
+            gameWindow.innerHTML = '';
+            
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'fade-in w-full';
+
+            let html = '';
+
+            if (state.type === 'intro' || state.type === 'end_win' || state.type === 'summary') {
+                inputContainer.style.display = 'none';
+                startContainer.style.display = 'block';
+                startBtn.textContent = state.type === 'intro' ? 'Bắt Đầu Thử Thách' : 'Chơi Lại';
+                html = `<div class="text-6xl mb-4">${state.icon || ''}</div><h2 class="text-3xl font-bold text-amber-400 mb-4">${state.title}</h2><div class="text-slate-300 text-lg">${state.content}</div>`;
+                
+                if(state.type === 'end_win' || state.type === 'summary') {
+                     startBtn.onclick = () => window.location.reload();
+                     if(state.type === 'end_win') {
+                        setTimeout(() => {
+                            const summaryIndex = gameData.findIndex(s => s.type === 'summary');
+                            renderState(summaryIndex);
+                        }, 3000);
+                     }
+                } else {
+                    startBtn.onclick = () => startGame();
+                }
+
+            } else if (state.type === 'puzzle') {
+                inputContainer.style.display = 'flex';
+                startContainer.style.display = 'none';
+                answerInput.value = '';
+                answerInput.focus();
+                html = `<div class="text-6xl mb-4">${state.icon}</div><h2 class="text-2xl font-bold mb-2">${state.title}</h2><p class="text-slate-300 mb-4">${state.question}</p>${state.puzzleContent || ''}`;
+            
+            } else if (state.type === 'feedback') {
+                inputContainer.style.display = 'none';
+                startContainer.style.display = 'block';
+                startBtn.textContent = 'Tiếp Tục';
+                
+                completedTasks++;
+                updateProgressBar();
+                
+                html = `<div class="text-6xl mb-4">${state.icon}</div><h2 class="text-3xl font-bold text-emerald-400 mb-2">${state.title}</h2><p class="text-4xl font-bold text-white my-4">${state.correctAnswer}</p><blockquote class="text-slate-400 italic">"${state.quote}"</blockquote>`;
+                
+                startBtn.onclick = () => {
+                    currentStateIndex++;
+                    const nextState = gameData[currentStateIndex];
+                    if (nextState) {
+                         if (nextState.type === 'feedback') {
+                             const winIndex = gameData.findIndex(s => s.type === 'end_win');
+                             renderState(winIndex);
+                         } else {
+                            renderState(currentStateIndex);
+                         }
+                    } else {
+                        const winIndex = gameData.findIndex(s => s.type === 'end_win');
+                        renderState(winIndex);
+                    }
+                };
+            }
+            
+            contentWrapper.innerHTML = html;
+            gameWindow.appendChild(contentWrapper);
+        }
+
+        function updateProgressBar() {
+            const progressPercentage = (completedTasks / 5) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function handleSubmission() {
+            const state = gameData[currentStateIndex];
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            
+            if (state.answer.includes(userAnswer)) {
+                currentStateIndex++;
+                renderState(currentStateIndex);
+            } else {
+                answerInput.classList.add('border-red-500', 'animate-shake');
+                setTimeout(() => answerInput.classList.remove('border-red-500', 'animate-shake'), 500);
+            }
+        }
+        
+        function startGame() {
+            currentStateIndex = 1; // Start with the first puzzle
+            completedTasks = 0;
+            updateProgressBar();
+            renderState(currentStateIndex);
+        }
+        
+        submitBtn.addEventListener('click', handleSubmission);
+        answerInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        window.onload = () => {
+            renderState(0);
+        };
+    </script>
+
+
+�</body></html>
